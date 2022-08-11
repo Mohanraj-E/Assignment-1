@@ -1,112 +1,109 @@
-# Assignment-1
-# Register and Login 
-!pip install bcrypt
+# Assingment-1 --> Registration and Login system using Python, file handling
+# Signup or registering Function
+def Register():
 
-import bcrypt
-def welcome():
-	print("Welcome to your dashboard")
-
-def gainAccess(Username=None, Password=None):
-    Username = input("Enter your username:")
-    Password = input("Enter your Password:")
-    
-    if not len(Username or Password) < 1:
-        if True:
-            db = open("database.txt", "r")
-            d = []
-            f = []
-            for i in db:
-                a,b = i.split(",")
-                b = b.strip()
-                c = a,b
-                d.append(a)
-                f.append(b)
-                data = dict(zip(d, f))
-            try:
-                if Username in data:
-                    hashed = data[Username].strip('b')
-                    hashed = hashed.replace("'", "")
-                    hashed = hashed.encode('utf-8')
-                    
-                    try:
-                        if bcrypt.checkpw(Password.encode(), hashed):
-                        
-                            print("Login success!")
-                            print("Hi", Username)
-                            welcome()
-                        else:
-                            print("Wrong password")
-                        
-                    except:
-                        print("Incorrect passwords or username")
+        # Openning and reading Text file
+        db = open("database.txt","r")
+        Username = input('Create Username :')
+        Password = input('Create Password :')
+        Password1 = input('Confirm Password :')
+        
+        # Creating Empty Lists
+        User=[]
+        Pass=[]
+        
+        # Adding or Appending the Keys and Values based on the user input to lists
+        # Merging the two lists into Dictionary as Keys and Values
+        for i in db:
+            User.append(Username)
+            Pass.append(Password)
+        data = dict(zip(User,Pass))
+        
+        # Importing re for Email Verification
+        import re 
+        regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+        
+        # Creating if Conditions of checking the formate of Password
+        #if ((Password != Password1) and (len(Password) >= 5) and (len(Password) <= 16)):
+        S, C, SP, D = 0, 0, 0, 0
+        capitalalphabets="ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        smallalphabets="abcdefghijklmnopqrstuvwxyz"
+        specialchar="!@#$%^&*()_-+=><?/:;{}[]*-"
+        digits="0123456789"
+        if (Password == Password1 and (len(Password) >= 5) and (len(Password) <= 16)):
+            for i in Password:
+                if (i in smallalphabets):
+                    S+=1
+                if (i in capitalalphabets):
+                    C+=1
+                if (i in digits):
+                    D+=1
+                if(i in specialchar):
+                    SP+=1
+        if (S>=1 and C>=1 and SP>=1 and D>=1 and S+SP+C+D==len(Password)):
+            if(re.fullmatch(regex, Username)):
+                db = open("database.txt",'a')
+                db.write(Username + ', ' + Password + '\n')
+                print("Success")
+                option2=input("Would you Like to continue with Login : \n Yes | No : ")
+                if option2 == "Yes":
+                    Login(User,Pass,data)
                 else:
-                    print("Username doesn't exist")
-            except:
-                print("Password or username doesn't exist")
-        else:
-            print("Error logging into the system")
-            
-    else:
-        print("Please attempt login again")
-        gainAccess()
-		
-		# b = b.strip()
-# accessDb()
-
-def register(Username=None, Password1=None, Password2=None):
-    Username = input("Enter a username:")
-    Password1 = input("Create password:")
-    Password2 = input("Confirm Password:")
-    db = open("database.txt", "r")
-    d = []
-    for i in db:
-        a,b = i.split(",")
-        b = b.strip()
-        c = a,b
-        d.append(a)
-    if not len(Password1)<=8:
-        db = open("database.txt", "r")
-        if not Username ==None:
-            if len(Username) <1:
-                print("Please provide a username")
-                register()
-            elif Username in d:
-                print("Username exists")
-                register()		
+                    home()
             else:
-                if Password1 == Password2:
-                    Password1 = Password1.encode('utf-8')
-                    Password1 = bcrypt.hashpw(Password1, bcrypt.gensalt())
-                                       
-                    db = open("database.txt", "a")
-                    db.write(Username+", "+str(Password1)+"\n")
-                    print("User created successfully!")
-                    print("Please login to proceed:")
+                print("Invalid Username, Please Register Again")
+                Register()
+        else:
+            print("Invalid Password, Please Register Again")
+            Register()
 
-					
-					# print(texts)
+# Login Function
+def Login(User,Pass,data):
+    
+    # Getting user input for login
+    Username = input('Enter Your Username :')
+    Password = input('Enter Your Password :')        
+    try:
+        if Username in User:
+            try:
+                if data[Username] == Password:
+                    print("Login Success")
+                    print("Hi, Welcome Mr/Mrs.", Username)
+                    print("\n")
+                    Logout()              
                 else:
-                    print("Passwords do not match")
-                    register()
+                    print("Username or Password is Incorrect")
+                    option1 = input("Have You Forgotten Your Password : \n Yes | No :")
+                    if option1 == "Yes":
+                        Username = input('Enter Your Username :') 
+                        print("Your password is : ",data[Username])
+                        home()
+                    else:
+                        print("Your Username not found, Please register, ThankYou")
+                        Register()
+            except:
+                print("Incorrect Username or Password")
+        else:
+            print("Username Doesn't exist")
+    except:
+        print("Username or Password doesn't exist")
+
+# Logout function
+def Logout(option = None):
+    option = input("\nDo you want Logout :\n\n\n Yes | No : ")
+    if option == "Yes":
+        home()
+        
+# Welcome Page
+# Home function allows user to choose between Login or Signup
+def home():
+    print("Welcome to Assessment-1 :Registration and Login system using Python, file handling")
+    print("\n\n")
+    option = input("Please Register to Continue : \n Yes | No : ")
+    if option == "Yes":
+        Register()
     else:
-        print("Password too short")
-
-
-
-def home(option=None):
-	print("Welcome, please select an option")
-	option = input("Login | Signup:")
-	if option == "Login":
-		gainAccess()
-	elif option == "Signup":
-		register()
-	else:
-		print("Please enter a valid parameter, this is case-sensitive")
-
-
-
-
-# register(Username, Password1, Password2)
-# gainAccess(Username, Password1)
+        print("Please enter an option")
+        home()
 home()
 
