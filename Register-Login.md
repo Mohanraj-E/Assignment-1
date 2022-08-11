@@ -95,7 +95,7 @@ def Logout(option = None):
         home()
         
 # Welcome Page
-# Home function allows user to choose between Login or Signup
+# Home function allows user to choose Register
 def home():
     print("Welcome to Assessment-1 :Registration and Login system using Python, file handling")
     print("\n\n")
